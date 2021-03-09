@@ -1,3 +1,7 @@
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+
 function App() {
   const senyores = [
     {
@@ -31,9 +35,20 @@ function App() {
       marcado: true
     }
   ];
+  const [senyoresReact, setSenyoresReact] = useState(senyores);
+  const marcarTodos = (event) => {
+    event.preventDefault();
+    setSenyoresReact(senyoresReact.map(senyor => ({ ...senyor, marcado: true })));
+  };
+  const marcarUnSenyor = (idSenyor) => {
+    setSenyoresReact(senyoresReact
+      .map(senyor => (senyor.id === idSenyor) ? ({ ...senyor, marcado: !senyor.marcado }) : senyor));
+  };
   const mapSenyores = (fichasSenyores) => {
     return fichasSenyores.map(senyor =>
-      <article className={`senyor${senyor.marcado ? " marcado" : ""}`} key={senyor.id}>
+      <article className={`senyor${senyor.marcado ? " marcado" : ""}`} key={senyor.id} onClick={
+        () => marcarUnSenyor(senyor.id)
+      }>
         <div className="avatar">
           <img src={`img/${senyor.foto}`} alt={`${senyor.nombre} señalándote con el dedo`} />
           <span className="inicial">{senyor.inicial}</span>
@@ -46,8 +61,8 @@ function App() {
             <li><span className="etiqueta">Twitter:</span> {senyor.twitter}</li>
           </ul>
         </div>
-        <i className="icono fas fa-check"></i>
-      </article>)
+        <FontAwesomeIcon className="icono" icon={faCheck}></FontAwesomeIcon>
+      </article>);
   };
   return (
     <div className="contenedor">
@@ -55,14 +70,14 @@ function App() {
         <h1>Señores que te apuntan con el dedo</h1>
         <p className="totales"><span className="nmarcados">
           {
-            senyores.reduce((acc, senyor) => acc + (senyor.marcado ? 1 : 0), 0)
+            senyoresReact.reduce((acc, senyor) => acc + (senyor.marcado ? 1 : 0), 0)
           }
         </span> señores que te apuntan con el dedo marcados</p>
-        <a className="accion-marcar" href="marcar-todos">Marcar todos</a>
+        <a className="accion-marcar" href="marcar-todos" onClick={e => marcarTodos(e)}>Marcar todos</a>
       </header>
       <main>
         {
-          mapSenyores(senyores)
+          mapSenyores(senyoresReact)
         }
       </main>
     </div>
